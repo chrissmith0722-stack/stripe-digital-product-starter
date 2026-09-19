@@ -1,0 +1,20 @@
+{
+  "name": "stripe-digital-product-starter",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Minimal Stripe Checkout + license key gate for one digital product",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.21.0",
+    "stripe": "^16.12.0"
+  },
+  "license": "MIT"
+}
