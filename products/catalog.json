@@ -22,5 +22,13 @@
     "stripe_price_env": "STRIPE_PRICE_FINANCE_BUNDLE",
     "file": "finance_bundle.zip",
     "blurb": "Cashflow Kit + Invoice Pack together."
+  },
+  {
+    "id": "client_ops_kit",
+    "name": "Freelancer Client Ops Kit",
+    "price_usd": 29,
+    "stripe_price_env": "STRIPE_PRICE_CLIENT_OPS_KIT",
+    "file": "client_ops_kit.zip",
+    "blurb": "Proposal, SOW, service agreement template, invoice, kickoff checklist, and client emails."
   }
 ]
