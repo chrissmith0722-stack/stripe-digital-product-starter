@@ -2,26 +2,21 @@
 
 Stripe Checkout for three digital SKUs → license key → zip download.
 
-## Products
+## Sales pages (Gumroad-style)
 
-| id | name | price |
-|----|------|------:|
-| cashflow_kit | Solo Freelancer Cashflow Kit | $19 |
-| invoice_pack | Invoice + Reminder Pack | $12 |
-| finance_bundle | Finance Starter Bundle | $27 |
+| page | CTA |
+|------|-----|
+| `/sales/cashflow_kit.html` | `/buy/cashflow_kit` ($19) |
+| `/sales/invoice_pack.html` | `/buy/invoice_pack` ($12) |
+| `/sales/finance_bundle.html` | `/buy/finance_bundle` ($27) |
+
+`GET /buy/:productId` starts Stripe Checkout. Cancel returns to the matching sales page.
 
 ## Setup
 
-1. Put buyer zips in `products/files/` (`cashflow_kit.zip`, `invoice_pack.zip`, `finance_bundle.zip`)
-2. `cp .env.example .env` and fill Stripe test secret + three Price IDs
+1. Put buyer zips in `products/files/`
+2. `cp .env.example .env` — fill `STRIPE_SECRET_KEY` + three Price IDs
 3. `npm install && npm start`
-4. Open http://localhost:4242
+4. Open `http://localhost:4242/sales/cashflow_kit.html`
 
-## Security
-
-Do not commit buyer zips to a public repo. Point `PRODUCTS_DIR` at a private folder (on this machine: `/workspace/stripe-shop/products`).
-
-## Production caveats
-
-- Prefer minting licenses on Stripe `checkout.session.completed` webhooks, not only `/success`
-- Email the license key so buyers who close the tab still get fulfillment
+Live test still blocked on Chris’s Stripe Price IDs.

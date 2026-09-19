@@ -58,6 +58,43 @@ function escapeHtml(s) {
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use("/sales", express.static(path.join(__dirname, "public", "sales")));
+
+async function startCheckout(productId, res) {
+  if (!stripe) {
+    return res
+      .status(500)
+      .send("Stripe is not configured. Set STRIPE_SECRET_KEY and price IDs in .env");
+  }
+  const catalog = loadCatalog();
+  const product = catalog.find((p) => p.id === productId);
+  if (!product) return res.status(400).send("Unknown product");
+  const priceId = productPriceId(product);
+  if (!priceId || String(priceId).includes("replace_me")) {
+    return res.status(500).send(`Missing price id env ${product.stripe_price_env}`);
+  }
+  try {
+    const session = await stripe.checkout.sessions.create({
+      mode: "payment",
+      line_items: [{ price: priceId, quantity: 1 }],
+      metadata: { product_id: product.id },
+      success_url:
+        process.env.SUCCESS_URL ||
+        `http://localhost:${port}/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url:
+        process.env.CANCEL_URL ||
+        `http://localhost:${port}/sales/${product.id}.html`,
+    });
+    return res.redirect(303, session.url);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).send(String(err.message || err));
+  }
+}
+
+app.get("/buy/:productId", async (req, res) => {
+  await startCheckout(req.params.productId, res);
+});
 
 app.get("/health", (_req, res) => {
   res.json({ ok: true });
@@ -75,6 +112,7 @@ app.get("/", (_req, res) => {
     <input type="hidden" name="product_id" value="${escapeHtml(p.id)}" />
     <button type="submit">Buy with Stripe</button>
   </form>
+  <p><a href="/sales/${escapeHtml(p.id)}.html">Sales page</a></p>
 </article>`
     )
     .join("\n");
@@ -90,33 +128,7 @@ ${cards}
 });
 
 app.post("/create-checkout-session", async (req, res) => {
-  if (!stripe) {
-    return res
-      .status(500)
-      .send("Stripe is not configured. Set STRIPE_SECRET_KEY and price IDs in .env");
-  }
-  const catalog = loadCatalog();
-  const product = catalog.find((p) => p.id === req.body.product_id);
-  if (!product) return res.status(400).send("Unknown product");
-  const priceId = productPriceId(product);
-  if (!priceId || String(priceId).includes("replace_me")) {
-    return res.status(500).send(`Missing price id env ${product.stripe_price_env}`);
-  }
-  try {
-    const session = await stripe.checkout.sessions.create({
-      mode: "payment",
-      line_items: [{ price: priceId, quantity: 1 }],
-      metadata: { product_id: product.id },
-      success_url:
-        process.env.SUCCESS_URL ||
-        `http://localhost:${port}/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: process.env.CANCEL_URL || `http://localhost:${port}/`,
-    });
-    res.redirect(303, session.url);
-  } catch (err) {
-    console.error(err);
-    res.status(500).send(String(err.message || err));
-  }
+  await startCheckout(req.body.product_id, res);
 });
 
 app.get("/success", async (req, res) => {
