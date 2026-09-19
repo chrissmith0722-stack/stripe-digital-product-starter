@@ -1,0 +1,26 @@
+[
+  {
+    "id": "cashflow_kit",
+    "name": "Solo Freelancer Cashflow Kit",
+    "price_usd": 19,
+    "stripe_price_env": "STRIPE_PRICE_CASHFLOW_KIT",
+    "file": "cashflow_kit.zip",
+    "blurb": "Income/expense/invoice sheet + tax-reserve % + Monthly Money-Close SOP."
+  },
+  {
+    "id": "invoice_pack",
+    "name": "Invoice + Reminder Pack",
+    "price_usd": 12,
+    "stripe_price_env": "STRIPE_PRICE_INVOICE_PACK",
+    "file": "invoice_pack.zip",
+    "blurb": "Invoice templates + payment reminder scripts for freelancers."
+  },
+  {
+    "id": "finance_bundle",
+    "name": "Finance Starter Bundle",
+    "price_usd": 27,
+    "stripe_price_env": "STRIPE_PRICE_FINANCE_BUNDLE",
+    "file": "finance_bundle.zip",
+    "blurb": "Cashflow Kit + Invoice Pack together."
+  }
+]

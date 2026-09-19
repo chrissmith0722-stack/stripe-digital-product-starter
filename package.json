@@ -1,8 +1,8 @@
 {
   "name": "stripe-digital-product-starter",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
-  "description": "Minimal Stripe Checkout + license key gate for one digital product",
+  "description": "Multi-product Stripe Checkout + license key + zip download",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
