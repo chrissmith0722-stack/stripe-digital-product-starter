@@ -7,17 +7,23 @@ const Stripe = require("stripe");
 
 const app = express();
 const port = process.env.PORT || 4242;
-const stripeSecret = process.env.STRIPE_SECRET_KEY;
-const priceId = process.env.STRIPE_PRICE_ID;
+const stripeSecret = process.env.STRIPE_SECRET_KEY || "";
+const priceId = process.env.STRIPE_PRICE_ID || "";
 const licensesPath = path.join(__dirname, "data", "licenses.json");
 
-if (!stripeSecret || !priceId || stripeSecret.includes("replace_me")) {
+function isPlaceholder(value) {
+  return !value || value.includes("replace_me");
+}
+
+const stripeConfigured = !isPlaceholder(stripeSecret) && !isPlaceholder(priceId);
+
+if (!stripeConfigured) {
   console.warn(
-    "Missing STRIPE_SECRET_KEY / STRIPE_PRICE_ID. Copy .env.example to .env and fill test values."
+    "Missing STRIPE_SECRET_KEY / STRIPE_PRICE_ID. Copy .env.example to .env and fill Stripe test-mode values."
   );
 }
 
-const stripe = stripeSecret ? new Stripe(stripeSecret) : null;
+const stripe = stripeConfigured ? new Stripe(stripeSecret) : null;
 
 function ensureLicensesFile() {
   const dir = path.dirname(licensesPath);
@@ -41,8 +47,28 @@ function mintLicenseKey() {
   return "LIC-" + crypto.randomBytes(8).toString("hex").toUpperCase();
 }
 
+function escapeHtml(value) {
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+
+app.get("/health", (_req, res) => {
+  res.json({
+    ok: true,
+    stripeConfigured,
+    modeHint: stripeSecret.startsWith("sk_live")
+      ? "live"
+      : stripeSecret.startsWith("sk_test")
+        ? "test"
+        : "unknown",
+  });
+});
 
 app.get("/", (_req, res) => {
   res.type("html").send(`<!doctype html>
@@ -114,6 +140,7 @@ app.get("/success", async (req, res) => {
       writeLicenses(store);
     }
 
+    const safeKey = escapeHtml(existing.key);
     res.type("html").send(`<!doctype html>
 <html lang="en">
 <head>
@@ -126,7 +153,7 @@ app.get("/success", async (req, res) => {
 </head>
 <body>
   <h1>You're in</h1>
-  <p>License key: <code>${existing.key}</code></p>
+  <p>License key: <code>${safeKey}</code></p>
   <p><a href="/download?key=${encodeURIComponent(existing.key)}">Download</a></p>
 </body>
 </html>`);
@@ -151,4 +178,7 @@ app.get("/download", (req, res) => {
 
 app.listen(port, () => {
   console.log(`Listening on http://localhost:${port}`);
+  if (!stripeConfigured) {
+    console.log("Smoke tip: GET /health should report stripeConfigured:false until .env is filled.");
+  }
 });
