@@ -30,5 +30,13 @@
     "stripe_price_env": "STRIPE_PRICE_CLIENT_OPS_KIT",
     "file": "client_ops_kit.zip",
     "blurb": "Proposal, SOW, service agreement template, invoice, kickoff checklist, and client emails."
+  },
+  {
+    "id": "gmail_expense_digest",
+    "name": "Gmail Expense Digest",
+    "price_usd": 19,
+    "stripe_price_env": "STRIPE_PRICE_GMAIL_EXPENSE_DIGEST",
+    "file": "gmail_expense_digest.zip",
+    "blurb": "Offline .eml receipts to expenses.csv — no Gmail API required."
   }
 ]
