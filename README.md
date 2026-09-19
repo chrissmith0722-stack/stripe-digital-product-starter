@@ -15,14 +15,18 @@ Stripe Checkout for four digital SKUs → license key → zip download.
 
 ## Docs
 
+- [SELLER_SETUP.md](docs/SELLER_SETUP.md) — clearer seller path (files → Prices → env → test sale → live checklist)
+- [GUMROAD_VS_STRIPE_CHECKOUT.md](docs/GUMROAD_VS_STRIPE_CHECKOUT.md) — when to use Gumroad vs this Stripe Checkout starter
 - [ENV.md](docs/ENV.md) — every environment variable (includes `STRIPE_PRICE_CLIENT_OPS_KIT`)
 - [TEST_MODE.md](docs/TEST_MODE.md) — step-by-step test checkout for all four products
 
 ## Setup
 
 1. Put buyer zips in `products/files/` (names must match `products/catalog.json`)
-2. `cp .env.example .env` — fill `STRIPE_SECRET_KEY` + four Price IDs (test mode)
+2. `cp .env.example .env` — fill `STRIPE_SECRET_KEY` + four Price IDs (test mode; placeholders only in git)
 3. `npm install && npm start`
 4. Open `http://localhost:4242/sales/cashflow_kit.html` (or any row in the table above)
+
+New sellers: start with [docs/SELLER_SETUP.md](docs/SELLER_SETUP.md).
 
 Live checkout still blocked until real Stripe Price IDs are set locally — this repo ships placeholders only.
